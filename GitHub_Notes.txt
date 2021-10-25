@@ -31,7 +31,7 @@ Next merge latest changes from master branch to avoid merge conflicts:
 -> git merge master
 
 Finally if no merge conflicts:
-
+->  git push --set-upstream origin <your_branch>
 -> git push
 
 Some useful commands:

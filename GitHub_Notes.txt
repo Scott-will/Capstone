@@ -34,6 +34,10 @@ Finally if no merge conflicts:
 ->  git push --set-upstream origin <your_branch>
 -> git push
 
+Go to github and create pull request:
+
+go to the repo, click on branches and make a PR for your branch
+
 Some useful commands:
 
 git status to see latest changes

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CycleSafe.AppShell"
+             BackgroundColor="DodgerBlue">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Welcome To Cycle Safe!"
+                VerticalOptions="StartAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Connect" Clicked="Connect"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

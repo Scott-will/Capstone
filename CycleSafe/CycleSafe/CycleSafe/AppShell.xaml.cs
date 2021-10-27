@@ -1,29 +1,16 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace CycleSafe
 {
-    public partial class AppShell : Xamarin.Forms.ContentPage
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class AppShell : Shell
     {
         public AppShell()
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(ConnectPage), typeof(ConnectPage));
-        }
 
-        async void Connect(object sender, EventArgs e)
-        {
-            try
-            {
-                var route = $"{nameof(ConnectPage)}";
-                await Shell.Current.GoToAsync(route);
-            }
-
-            catch(Exception error)
-            {
-                Console.WriteLine(error);
-            }
-           
         }
     }
 }

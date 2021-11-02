@@ -19,7 +19,7 @@ namespace CycleSafe.Views
 
         async void Connect(object sender, EventArgs e)
         {
-            var path = ($"App folder path :{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}");
+            var path = $"App folder path :{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}";
             Log.Debug("Button was pushed!");
             await Shell.Current.GoToAsync(nameof(HomeScreen));
         }

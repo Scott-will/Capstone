@@ -1,9 +1,10 @@
-﻿using System;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using LoggingService;
+using GalaSoft.MvvmLight.Ioc;
+using Xamarin.Forms;
 
 namespace CycleSafe.Droid
 {
@@ -16,13 +17,23 @@ namespace CycleSafe.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            
             LoadApplication(new App());
+
+            this.Bootstraping();
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private void Bootstraping()
+        {
+            var assembly = this.GetType().Assembly;
+            var assemblyName = assembly.GetName().Name;
+            DependencyService.Get<ILogService>().Initialize(assembly, assemblyName);
         }
     }
 }

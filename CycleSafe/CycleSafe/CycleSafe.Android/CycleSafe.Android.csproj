@@ -59,6 +59,12 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MvvmLightLibs">
+      <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>4.7.12</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
@@ -92,10 +98,17 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\LoggingService\LoggingService.csproj">
+      <Project>{1F5CFBF5-2437-4EA5-8CEC-4FE8BD5C7021}</Project>
+      <Name>LoggingService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CycleSafe\CycleSafe.csproj">
       <Project>{4324D2AA-37F9-4A17-975D-B6FAC3D88405}</Project>
       <Name>CycleSafe</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\NLog.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

@@ -9,7 +9,7 @@ namespace CycleSafe
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(ConnectPage), typeof(ConnectPage));
+            Routing.RegisterRoute(nameof(Views.ConnectPage), typeof(Views.ConnectPage));
 
         }
     }

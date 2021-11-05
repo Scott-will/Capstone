@@ -3,8 +3,9 @@ using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
 using LoggingService;
-using GalaSoft.MvvmLight.Ioc;
 using Xamarin.Forms;
+using CycleSafe.Bluetooth;
+using CycleSafe.Views;
 
 namespace CycleSafe.Droid
 {
@@ -17,7 +18,7 @@ namespace CycleSafe.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            
+            DependencyService.Register<IBluetoothHandler, BluetoothHandler>();
             LoadApplication(new App());
 
             this.Bootstraping();

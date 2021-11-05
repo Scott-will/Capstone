@@ -7,10 +7,11 @@ using Xamarin.Forms;
 using LoggingService;
 using Java.Util;
 using System.Threading.Tasks;
+using CycleSafe.Views;
 
 namespace CycleSafe.Bluetooth
 {
-    class BluetoothHandler
+    public class BluetoothHandler : IBluetoothHandler
     {
 
         private BluetoothAdapter adapter;
@@ -49,6 +50,11 @@ namespace CycleSafe.Bluetooth
 
         public bool GetDevice()
         {
+            Log.Debug("Devices:");
+            foreach(var d in adapter.BondedDevices)
+            {
+                Log.Debug($"{d.Name}");
+            }
             device = (from bd in adapter.BondedDevices where bd.Name == Name select bd).FirstOrDefault();
             if (device == null)
             {

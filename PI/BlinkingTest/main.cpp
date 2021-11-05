@@ -36,7 +36,7 @@ double distance(void) {
 }
 
 
-int main(void) {
+/*int main(void) {
 	wiringPiSetupSys();
 	pinMode(TRIG, OUTPUT);
 	pinMode(ECHO, INPUT);
@@ -50,4 +50,4 @@ int main(void) {
 
 	}
 	return 0;
-}
+}*/

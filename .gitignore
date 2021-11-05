@@ -235,3 +235,4 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 /PI/External Libs/bluez-5.62
+/PI/External Libs/bluez-5.43

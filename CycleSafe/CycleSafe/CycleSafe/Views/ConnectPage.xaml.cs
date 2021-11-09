@@ -8,7 +8,7 @@ namespace CycleSafe.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ConnectPage : ContentPage
     {
-        IBluetoothHandler handler;
+        private IBluetoothHandler handler;
 
         private readonly ILogService Log;
         public ConnectPage()
@@ -23,7 +23,8 @@ namespace CycleSafe.Views
         {
             var path = $"App folder path :{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}";
             Log.Debug("Button was pushed!");
-            handler.Initialize();
+            await handler.Initialize();
+            handler.Listen();
             await Shell.Current.GoToAsync(nameof(HomeScreen));
         }
     }

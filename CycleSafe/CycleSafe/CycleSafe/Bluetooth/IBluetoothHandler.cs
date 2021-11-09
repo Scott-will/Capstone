@@ -8,5 +8,7 @@ namespace CycleSafe.Views
     public interface IBluetoothHandler
     {
         Task<bool> Initialize();
+
+        void Listen();
     }
 }

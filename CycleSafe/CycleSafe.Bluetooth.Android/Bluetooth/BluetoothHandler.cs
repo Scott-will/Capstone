@@ -27,7 +27,7 @@ namespace CycleSafe.Bluetooth
         public async Task<bool> Initialize()
         {
             if (!GetAdapter())
-            {
+            { 
                 Log.Error("Failed to initialize adapter");
                 return false;
             }                      
@@ -37,7 +37,7 @@ namespace CycleSafe.Bluetooth
                 Log.Error("Could not find device");
                 return false;
             }
-
+            //adapter.CancelDiscovery();
             if (!InitializeSocket())
             {
                 Log.Error("Could not initialize socket");
@@ -89,7 +89,7 @@ namespace CycleSafe.Bluetooth
         }
 
         private bool InitializeSocket()
-        {
+        {            
             socket = device.CreateInsecureRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805F9B34FB"));
             try
             {
@@ -103,7 +103,7 @@ namespace CycleSafe.Bluetooth
             return true;
         }
 
-        public async void Listen()
+        public async Task Listen()
         {
             var listening = true;
             Log.Debug("Listening");
@@ -123,6 +123,7 @@ namespace CycleSafe.Bluetooth
 
                     var message = Encoding.UTF8.GetString(textBuffer);
                     Log.Debug($"Recieved message:\n{message}");
+                    Alerts.AlertService.Alert(message);
                 }
                 catch(Exception e)
                 {

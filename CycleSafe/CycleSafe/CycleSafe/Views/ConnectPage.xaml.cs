@@ -1,5 +1,6 @@
 ﻿using LoggingService;
 using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -24,7 +25,10 @@ namespace CycleSafe.Views
             var path = $"App folder path :{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}";
             Log.Debug("Button was pushed!");
             await handler.Initialize();
-            handler.Listen();
+            Task.Run(async () =>
+            {
+                handler.Listen();
+            });
             await Shell.Current.GoToAsync(nameof(HomeScreen));
         }
     }

@@ -9,6 +9,6 @@ namespace CycleSafe.Views
     {
         Task<bool> Initialize();
 
-        void Listen();
+        Task Listen();
     }
 }

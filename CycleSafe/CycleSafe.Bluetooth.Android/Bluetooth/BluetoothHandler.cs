@@ -4,10 +4,9 @@ using Android.Bluetooth;
 using System.Linq;
 using Xamarin.Forms;
 using LoggingService;
-using Java.Util;
 using System.Threading.Tasks;
 using CycleSafe.Views;
-using Java.Lang.Reflect;
+using Java.Util;
 
 namespace CycleSafe.Bluetooth
 {
@@ -19,6 +18,7 @@ namespace CycleSafe.Bluetooth
         private const string Name = "The jacket H2O";//"raspberrypi";
         private readonly ILogService Log;
         private BluetoothSocket socket;
+        private BluetoothServerSocket serverSocket;
 
         public BluetoothHandler()
         {
@@ -89,17 +89,24 @@ namespace CycleSafe.Bluetooth
         }
 
         private bool InitializeSocket()
-        {            
+        {
+            //socket = new BluetoothServerSocket();
             socket = device.CreateInsecureRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805F9B34FB"));
-            try
+            if (!socket.IsConnected)
             {
-                socket.Connect();               
+                try
+                {
+                    //serverSocket = socket;
+                    socket.Connect();               
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"{e}");
+                    return false;
+                }
             }
-            catch(Exception e)
-            {
-                Log.Error($"{e}");
-                return false;
-            }           
+            
+                   
             return true;
         }
 

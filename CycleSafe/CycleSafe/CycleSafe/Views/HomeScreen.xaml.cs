@@ -18,5 +18,10 @@ namespace CycleSafe.Views
             handler = DependencyService.Get<IBluetoothHandler>(DependencyFetchTarget.GlobalInstance);
             InitializeComponent();
         }
+
+        public void Alert(object sender, EventArgs e)
+        {
+            Log.Debug("pressed");
+        }
     }
 }

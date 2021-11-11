@@ -37,7 +37,7 @@ namespace CycleSafe.Bluetooth
                 Log.Error("Could not find device");
                 return false;
             }
-            //adapter.CancelDiscovery();
+            adapter.CancelDiscovery();
             if (!InitializeSocket())
             {
                 Log.Error("Could not initialize socket");

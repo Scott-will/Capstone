@@ -13,3 +13,10 @@ _ReSharper.*/
 *.force
 obj/
 bin/
+/.vs/Capstone/v16/Browse.VC.db
+/.vs/Capstone/v16/Browse.VC.db-wal
+/.vs/Capstone/v16/Browse.VC.opendb
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/.vs/Capstone/v16/Browse.VC.db-shm

@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿using CycleSafe.Views;
+using GalaSoft.MvvmLight.Ioc;
 using LoggingService;
 using System;
 using Xamarin.Forms;

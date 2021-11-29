@@ -10,6 +10,7 @@ namespace CycleSafe
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(Views.ConnectPage), typeof(Views.ConnectPage));
+            Routing.RegisterRoute(nameof(Views.HomeScreen), typeof(Views.HomeScreen));
 
         }
     }

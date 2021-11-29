@@ -98,6 +98,10 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CycleSafe.Bluetooth.Android\CycleSafe.Bluetooth.Android.csproj">
+      <Project>{db6b771f-8cd2-4596-a45c-8ff077cb7a24}</Project>
+      <Name>CycleSafe.Bluetooth.Android</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\LoggingService\LoggingService.csproj">
       <Project>{1F5CFBF5-2437-4EA5-8CEC-4FE8BD5C7021}</Project>
       <Name>LoggingService</Name>

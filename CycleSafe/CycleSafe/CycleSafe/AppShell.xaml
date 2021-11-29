@@ -4,6 +4,9 @@
              xmlns:local="clr-namespace:CycleSafe.Views"
              x:Class="CycleSafe.AppShell">
     <ShellItem Route="ConnectPage">
-        <ShellContent ContentTemplate="{DataTemplate local:ConnectPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate local:ConnectPage}"/>       
+    </ShellItem>
+    <ShellItem Route="HomeScreen">
+        <ShellContent ContentTemplate="{DataTemplate local:HomeScreen}"/>
     </ShellItem>
 </Shell>

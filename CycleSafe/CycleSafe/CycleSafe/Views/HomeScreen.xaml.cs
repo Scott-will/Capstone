@@ -19,9 +19,9 @@ namespace CycleSafe.Views
             InitializeComponent();
         }
 
-        public void Alert(object sender, EventArgs e)
+        public void Send(Object sender, EventArgs e)
         {
-            Log.Debug("pressed");
+            handler.Send();
         }
     }
 }

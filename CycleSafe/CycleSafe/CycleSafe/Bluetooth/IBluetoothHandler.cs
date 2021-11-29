@@ -10,5 +10,7 @@ namespace CycleSafe.Views
         Task<bool> Initialize();
 
         Task Listen();
+
+        void Send();
     }
 }

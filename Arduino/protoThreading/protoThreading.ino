@@ -10,10 +10,36 @@
 #define BUTTON_PIN2 7
 #define anag A1
 
-static struct pt pt1 , pt2 ;
+static struct pt pt1 , pt2,pt3 ;
 volatile byte leftTurnS = LOW;
 volatile byte rightTurnS = LOW;
 static int i=0;
+
+class BluetoothHandler{
+  //public methods and properties
+  public:
+  bool connected;
+
+    void Listen(struct pt *ptB){
+    PT_BEGIN(ptB);
+    while(Serial.available()){
+      lastTimeBlink=millis();
+      PT_WAIT_UNTIL(pt,millis()-lastTimeBlink>10);
+      message = Serial.read();
+      Serial.println(message);
+      if(message == 1){
+        digitalWrite(8, HIGH);
+      }
+    }
+    PT_END(pt);
+  }
+
+  //private methods and properties
+  private:
+  String message; 
+};
+
+
 static int leftTurn(struct pt *pt){
   static unsigned long lastTimeBlink=0;
   PT_BEGIN(pt);
@@ -58,7 +84,7 @@ static int rightTurn(struct pt *ptR){
 
 static int count = 0;
 static int Rcount = 0;
-
+BluetoothHandler handler;
 void setup(){
  // put your setup code here, to run once:
  pinMode(LED_1_PIN,OUTPUT);
@@ -66,7 +92,7 @@ void setup(){
  PT_INIT(&pt1);
  PT_INIT(&pt2);
  pinMode(BUTTON_PIN, INPUT);
- 
+ pinMode(8, OUTPUT);
  pinMode(BUTTON_PIN2, INPUT);
  pinMode(TURN_INTERUPT,INPUT);
  attachInterrupt(digitalPinToInterrupt(TURN_INTERUPT), stateTurn, RISING);
@@ -78,7 +104,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   leftTurn(&pt1);
   rightTurn(&pt2);
-
+  handler.Listen(&pt3);
   
 }
 

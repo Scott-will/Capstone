@@ -3,8 +3,11 @@ using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
 using LoggingService;
-using GalaSoft.MvvmLight.Ioc;
 using Xamarin.Forms;
+using CycleSafe.Bluetooth;
+using CycleSafe.Views;
+using Android.Content;
+using Android.Bluetooth;
 
 namespace CycleSafe.Droid
 {
@@ -17,7 +20,11 @@ namespace CycleSafe.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            
+            DependencyService.Register<IBluetoothHandler, BluetoothHandler>();
+            IntentFilter filter = new IntentFilter();
+            filter.AddAction(BluetoothDevice.ActionAclConnected);
+            filter.AddAction(BluetoothDevice.ActionAclDisconnected);
+            //this.registerReceiver(mReceiver, filter);
             LoadApplication(new App());
 
             this.Bootstraping();

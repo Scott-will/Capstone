@@ -15,7 +15,7 @@ namespace CycleSafe.Bluetooth
 
         private BluetoothAdapter adapter;
         private BluetoothDevice device;
-        private const string Name = "The jacket H2O";//"raspberrypi";
+        private const string Name = "DSD TECH HC-05";//"arduino";
         private readonly ILogService Log;
         private BluetoothSocket socket;
         private BluetoothServerSocket serverSocket;
@@ -37,7 +37,7 @@ namespace CycleSafe.Bluetooth
                 Log.Error("Could not find device");
                 return false;
             }
-            adapter.CancelDiscovery();
+            //adapter.CancelDiscovery();
             if (!InitializeSocket())
             {
                 Log.Error("Could not initialize socket");
@@ -141,6 +141,12 @@ namespace CycleSafe.Bluetooth
             }
 
             Log.Debug("Stop listening");
+        }
+
+        public void Send()
+        {
+            var outStream = socket.OutputStream;
+            outStream.WriteByte(1);
         }
     }
     //https://developer.android.com/guide/topics/connectivity/bluetooth/permissions

@@ -4,13 +4,15 @@
              x:Class="CycleSafe.Views.ConnectPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to CycleSafe"
-                VerticalOptions="StartAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-            <Button Text="Connect"
-                    VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand"
-                    Clicked="Connect"/>
+            <Image Source="Images/cyclesafe.png"
+                   VerticalOptions="Center"
+                   HeightRequest="200"
+                   Aspect="AspectFit"/>
         </StackLayout>
     </ContentPage.Content>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PageControlTextColor">Blue</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 </ContentPage>

@@ -19,6 +19,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingService", "LoggingSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CycleSafe.Bluetooth.Android", "CycleSafe.Bluetooth.Android\CycleSafe.Bluetooth.Android.csproj", "{DB6B771F-8CD2-4596-A45C-8FF077CB7A24}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{94585223-B84C-42BF-833B-41CE8C63EE40}"
+	ProjectSection(SolutionItems) = preProject
+		images\bluetooth.png = images\bluetooth.png
+		images\cyclesafe.png = images\cyclesafe.png
+		images\home.png = images\home.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

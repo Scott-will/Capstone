@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">CycleSafe</string>
+    <string name="tab_text_1">Ride</string>
+    <string name="tab_text_2">Settings</string>
+    <string name="tab_text_3">Statistics</string>
+</resources>

@@ -18,7 +18,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class BluetoothHandler {
     private BluetoothAdapter adapter;
     private BluetoothDevice device;
-    private final String Name = "DSD TECH HC-05";//"arduino";
+    private String Name;// = "DSD TECH HC-05";//"arduino";
     private final String intentMessage = "This app requires bluetooth permissions to conenct to the Arduino";
     private BluetoothSocket socket;
     private BluetoothServerSocket serverSocket;
@@ -29,6 +29,11 @@ public class BluetoothHandler {
         this.context = context;
         this.activity =  activity;
     }
+
+    public void SetDeviceID(String ID){
+        this.Name = ID;
+    }
+
     public boolean Initialize() throws IOException {
         if(!RequestPermissionForBluetooth()){
             //Do nothing

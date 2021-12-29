@@ -1,6 +1,5 @@
 package com.example.cyclesafejava;
 
-import android.Manifest;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -8,19 +7,16 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.example.cyclesafejava.ui.main.SectionsPagerAdapter;
 import com.example.cyclesafejava.databinding.ActivityMainBinding;
+import com.google.android.material.textfield.TextInputLayout;
 
-import java.io.Console;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
@@ -28,7 +24,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     private ActivityMainBinding binding;
-
+    private TextInputLayout textInputLayout;
+    private BluetoothHandler handler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         TabLayout tabs = binding.tabs;
         tabs.setupWithViewPager(viewPager);
         FloatingActionButton fab = binding.fab;
-
+        this.handler = new BluetoothHandler(this.getApplicationContext(), this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,14 +57,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     public void Connect(View view){
-        BluetoothHandler handler = new BluetoothHandler(this.getApplicationContext(), this);
         try{
-            handler.Initialize();
+            this.handler.Initialize();
         }
         catch(Exception e){
 
         }
 
+    }
+
+    public void ChangeDeviceID(View view){
+        this.textInputLayout = findViewById(R.id.DeviceID);
+        String ID = this.textInputLayout.getEditText().getText().toString().trim();
+        this.handler.SetDeviceID(ID);
     }
 
     @Override

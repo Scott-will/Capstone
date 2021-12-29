@@ -1,4 +1,4 @@
-package com.example.cyclesafejava;
+package com.example.cyclesafejava.Bluetooth;
 
 import android.Manifest;
 import android.app.Activity;

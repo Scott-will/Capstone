@@ -17,7 +17,7 @@ public class SettingsFragment  extends Fragment {
     }
 
     public void Connect(View view){
-            BluetoothHandler handler = new BluetoothHandler();
+            BluetoothHandler handler = new BluetoothHandler(getContext(), this.getActivity());
             try{
                 handler.Initialize();
             }

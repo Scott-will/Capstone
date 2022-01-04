@@ -1,25 +1,44 @@
-package com.example.cyclesafejava;
+package com.example.cyclesafejava.Bluetooth;
 
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.os.Build;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class BluetoothHandler {
     private BluetoothAdapter adapter;
     private BluetoothDevice device;
-    private final String Name = "DSD TECH HC-05";//"arduino";
+    private String Name;// = "DSD TECH HC-05";//"arduino";
+    private final String intentMessage = "This app requires bluetooth permissions to conenct to the Arduino";
     private BluetoothSocket socket;
     private BluetoothServerSocket serverSocket;
+    private Context context;
+    private Activity activity;
 
-    public BluetoothHandler(){
-
+    public BluetoothHandler(Context context, Activity activity){
+        this.context = context;
+        this.activity =  activity;
     }
+
+    public void SetDeviceID(String ID){
+        this.Name = ID;
+    }
+
     public boolean Initialize() throws IOException {
+        if(!RequestPermissionForBluetooth()){
+            //Do nothing
+            return false;
+        }
         if (!GetAdapter())
         {
             return false;
@@ -99,6 +118,17 @@ public class BluetoothHandler {
         return true;
     }
 
+    private boolean RequestPermissionForBluetooth(){
+        /*if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S){
+            return true;
+        }*/
+        String[] permissions = new String[] {Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN};
+        if(EasyPermissions.hasPermissions(context, permissions)){
+            return true;
+        }
+        EasyPermissions.requestPermissions(activity, intentMessage, 0, permissions);
+        return false;
+    }
     /*public async Task Listen()
     {
         boolean listening = true;

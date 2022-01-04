@@ -16,14 +16,7 @@ public class SettingsFragment  extends Fragment {
         return inflater.inflate(R.layout.settingsfragment_layout, container, false);
     }
 
-    public void Connect(View view){
-            BluetoothHandler handler = new BluetoothHandler();
-            try{
-                handler.Initialize();
-            }
-            catch(Exception e){
 
-        }
 
-    }
+
 }

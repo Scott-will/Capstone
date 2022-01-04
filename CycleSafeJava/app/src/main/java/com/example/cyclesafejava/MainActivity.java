@@ -3,6 +3,9 @@ package com.example.cyclesafejava;
 import android.os.Bundle;
 
 import com.example.cyclesafejava.Bluetooth.BluetoothHandler;
+import com.example.cyclesafejava.Json.JsonFileHandler;
+import com.example.cyclesafejava.data.Settings;
+import com.example.cyclesafejava.data.Statistics;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private ActivityMainBinding binding;
     private TextInputLayout textInputLayout;
     private BluetoothHandler handler;
+
+    private Settings settings;
+    private Statistics statistics;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,5 +87,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         Log.println(Log.ERROR,"Request Denied", "Request Denied");
+    }
+
+    public void LoadStoredData(){
+        this.statistics = JsonFileHandler.readStatistics();
+        this.settings = JsonFileHandler.readSettings();
     }
 }

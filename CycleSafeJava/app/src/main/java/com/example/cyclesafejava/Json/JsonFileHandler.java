@@ -1,30 +1,35 @@
 package com.example.cyclesafejava.Json;
-
-import android.util.JsonReader;
-
 import com.example.cyclesafejava.data.Settings;
 import com.example.cyclesafejava.data.Statistics;
-
 import org.json.JSONObject;
-
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.FileWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Set;
-
 public class JsonFileHandler {
 
-    public static void writeStatistics(){
+    public static void writeStatistics(Statistics statistics){
+        JSONObject jsonObject = new JSONObject();
+        try{
+            jsonObject.put("FastestSpeed", statistics.FastestSpeed);
+            jsonObject.put("LongestRide",statistics.LongestRide);
+            jsonObject.put("TotalDistance",statistics.TotalDistance);
+            WriteFile(jsonObject);
+        }
+        catch(Exception e){
+
+        }
 
     }
 
-    public static void writeSettings(){
+    public static void writeSettings(Settings settings){
+        JSONObject jsonObject = new JSONObject();
+        try{
+            jsonObject.put("DeviceID", settings.DeviceID);
+            WriteFile(jsonObject);
+        }
+        catch(Exception e){
 
+        }
     }
 
     public static Statistics readStatistics(){
@@ -47,6 +52,17 @@ public class JsonFileHandler {
         }
         catch (Exception e){
             return "";
+        }
+    }
+
+    private static boolean WriteFile(JSONObject json){
+        try{
+            FileWriter file = new FileWriter("");
+            file.write(json.toString());
+            return true;
+        }
+        catch(Exception e){
+            return false;
         }
     }
 }

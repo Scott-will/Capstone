@@ -3,4 +3,5 @@
     <string name="tab_text_1">Ride</string>
     <string name="tab_text_2">Settings</string>
     <string name="tab_text_3">Statistics</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

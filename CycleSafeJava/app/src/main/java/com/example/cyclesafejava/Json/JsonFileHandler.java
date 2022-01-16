@@ -19,6 +19,9 @@ import java.util.Set;
 
 public class JsonFileHandler {
 
+    private static String SettingsFileName = "Settings.json";
+    private static String StatisticsFileName = "Statistics.json";
+
     public static void writeStatistics(){
 
     }
@@ -27,17 +30,30 @@ public class JsonFileHandler {
 
     }
 
-    public static Statistics readStatistics(){
-        String content = ReadFile("");
-        Statistics statistics = JsonParser.ParseStatistics(content);
-        return statistics;
-
+    public static Statistics readStatistics(String directory){
+        Path path = Paths.get(directory, StatisticsFileName);
+        if(Files.exists(path)){
+            String content = ReadFile(path.toString());
+            Statistics statistics = JsonParser.ParseStatistics(content);
+            return statistics;
+        }
+        else{
+            File statisticsFile = new File(path.toString());
+        }
+        return null;
     }
 
-    public static Settings readSettings(){
-        String content = ReadFile("");
-        Settings settings = JsonParser.ParseSettings(content);
-        return settings;
+    public static Settings readSettings(String directory){
+        Path path = Paths.get(directory, StatisticsFileName);
+        if(Files.exists(path)){
+            String content = ReadFile(path.toString());
+            Settings settings = JsonParser.ParseSettings(content);
+            return settings;
+        }
+        else{
+            File statisticsFile = new File(path.toString());
+        }
+        return null;
     }
 
     private static String ReadFile(String path){
@@ -49,4 +65,6 @@ public class JsonFileHandler {
             return "";
         }
     }
+
+
 }

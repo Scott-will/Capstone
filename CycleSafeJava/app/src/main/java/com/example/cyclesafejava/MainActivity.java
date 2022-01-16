@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         TabLayout tabs = binding.tabs;
         tabs.setupWithViewPager(viewPager);
         FloatingActionButton fab = binding.fab;
+        this.LoadStoredData();
         this.handler = new BluetoothHandler(this.getApplicationContext(), this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     public void LoadStoredData(){
-        this.statistics = JsonFileHandler.readStatistics();
-        this.settings = JsonFileHandler.readSettings();
+        String directory = getApplicationInfo().dataDir;
+        this.statistics = JsonFileHandler.readStatistics(directory);
+        this.settings = JsonFileHandler.readSettings(directory);
     }
 }

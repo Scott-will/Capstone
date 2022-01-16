@@ -18,7 +18,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class BluetoothHandler {
     private BluetoothAdapter adapter;
     private BluetoothDevice device;
-    private String Name;// = "DSD TECH HC-05";//"arduino";
+    private String Name = "WH-1000XM3";// TECH HC-05";//"arduino";XM3
     private final String intentMessage = "This app requires bluetooth permissions to conenct to the Arduino";
     private BluetoothSocket socket;
     private BluetoothServerSocket serverSocket;
@@ -127,7 +127,7 @@ public class BluetoothHandler {
             return true;
         }
         EasyPermissions.requestPermissions(activity, intentMessage, 0, permissions);
-        return false;
+        return true;
     }
     /*public async Task Listen()
     {

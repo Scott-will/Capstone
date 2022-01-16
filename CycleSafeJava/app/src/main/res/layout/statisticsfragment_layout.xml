@@ -10,4 +10,10 @@
         android:layout_height="wrap_content"
         android:text="This is Statistics Page"
         android:textSize="30sp"/>
+
+    <ListView
+        android:id="@+id/StatisticsList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>

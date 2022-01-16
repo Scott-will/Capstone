@@ -37,10 +37,10 @@ public class JsonFileHandler {
             Statistics statistics = JsonParser.ParseStatistics(content);
             return statistics;
         }
-        else{
+        else {
             File statisticsFile = new File(path.toString());
+            return new Statistics(0.0, 0.0, 0.0);
         }
-        return null;
     }
 
     public static Settings readSettings(String directory){
@@ -52,8 +52,8 @@ public class JsonFileHandler {
         }
         else{
             File statisticsFile = new File(path.toString());
+            return new Settings();
         }
-        return null;
     }
 
     private static String ReadFile(String path){

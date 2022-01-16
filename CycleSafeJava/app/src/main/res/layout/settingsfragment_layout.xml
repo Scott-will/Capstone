@@ -25,6 +25,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/DeviceIDEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="hint" />
@@ -33,7 +34,7 @@
             android:id="@+id/ChangeNameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
+            android:text="Change Device Name"
             android:onClick="ChangeDeviceID"/>
     </com.google.android.material.textfield.TextInputLayout>
 

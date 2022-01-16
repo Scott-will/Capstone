@@ -16,12 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.cyclesafejava.ui.main.SectionsPagerAdapter;
 import com.example.cyclesafejava.databinding.ActivityMainBinding;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -30,9 +34,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private ActivityMainBinding binding;
     private TextInputLayout textInputLayout;
     private BluetoothHandler handler;
-
+    ListView statisticsList;
     private Settings settings;
     private Statistics statistics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         TabLayout tabs = binding.tabs;
         tabs.setupWithViewPager(viewPager);
         FloatingActionButton fab = binding.fab;
-        this.LoadStoredData();
-        this.handler = new BluetoothHandler(this.getApplicationContext(), this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         .setAction("Action", null).show();
             }
         });
+        this.handler = new BluetoothHandler(this.getApplicationContext(), this);
     }
 
     @Override
@@ -95,4 +99,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         this.statistics = JsonFileHandler.readStatistics(directory);
         this.settings = JsonFileHandler.readSettings(directory);
     }
+
+
+
 }

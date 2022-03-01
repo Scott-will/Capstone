@@ -42,4 +42,5 @@ Some useful commands:
 
 git status to see latest changes
 git diff shows line by line changes (dont recommend just download source tree or some similair software)
+ Hi
 

@@ -1,5 +1,6 @@
 package com.example.cyclesafejava;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.cyclesafejava.Bluetooth.BluetoothHandler;
@@ -54,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                startActivity(intent);
             }
         });
         this.handler = new BluetoothHandler(this.getApplicationContext(), this);
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     public void LoadStoredData(){
+        Logger.debug("Loading Data");
         String directory = getApplicationInfo().dataDir;
         this.statistics = JsonFileHandler.readStatistics(directory);
         this.settings = JsonFileHandler.readSettings(directory);

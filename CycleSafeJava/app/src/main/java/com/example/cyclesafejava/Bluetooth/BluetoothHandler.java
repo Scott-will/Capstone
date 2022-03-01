@@ -9,6 +9,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Build;
 
+import com.example.cyclesafejava.Logger;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -62,11 +64,13 @@ public class BluetoothHandler {
 
     private boolean GetDevice()
     {
-        //Log.Debug("Devices:");
+        Logger.debug("Devices:");
         for(BluetoothDevice d : adapter.getBondedDevices())
         {
+            Logger.debug(d.getName());
             if(d.getName() == Name) {
                 device = d;
+
             }
 
         }
@@ -77,7 +81,7 @@ public class BluetoothHandler {
         }
         if (!device.fetchUuidsWithSdp())
         {
-            //Log.Error("Failed to find UUIDs");
+            Logger.error("Failed to find UUIDs");
         }
 
         return true;
@@ -92,7 +96,7 @@ public class BluetoothHandler {
         }
         if (!adapter.isEnabled())
         {
-            //Log.Error("Adapter is not enabled");
+            Logger.error("Adapter is not enabled");
             return false;
         }
         return true;
@@ -109,7 +113,7 @@ public class BluetoothHandler {
             }
             catch (Exception e)
             {
-                //Log.Error($"{e}");
+                Logger.error(e.toString());
                 return false;
             }
         }

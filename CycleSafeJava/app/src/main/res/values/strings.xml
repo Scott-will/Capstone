@@ -4,4 +4,5 @@
     <string name="tab_text_2">Settings</string>
     <string name="tab_text_3">Statistics</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="maps_api_key">AIzaSyDcAJX1uQU3urGhAOm2QBVrLUlQQJd_RyQ</string>
 </resources>

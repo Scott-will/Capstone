@@ -37,9 +37,12 @@ SharpIR myRightSensor = SharpIR(IR_Right_Pin, model);
 // ProtoThreading Structures
 static struct pt pt_Left_Blind, pt_Right_Blind;
 
+int distance_left_cm;
+int distance_right_cm;
 static int BlindSpot(struct pt *ptB, int IR_distance){
   static unsigned long lastTimeBlinkB=0;
   PT_BEGIN(ptB);
+  
   while(1){
       lastTimeBlinkB=millis();
       PT_WAIT_UNTIL(ptB,millis()-lastTimeBlinkB>IR_distance/IR_Normalization);

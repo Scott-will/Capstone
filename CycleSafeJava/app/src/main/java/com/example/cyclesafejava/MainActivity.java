@@ -1,6 +1,8 @@
 package com.example.cyclesafejava;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.example.cyclesafejava.Bluetooth.BluetoothHandler;
@@ -12,6 +14,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private TextInputLayout textInputLayout;
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     ListView statisticsList;
     private Settings settings;
     private Statistics statistics;
+    private static final int PERMISSIONS_REQUEST_BLUETOOTH = 2;
+    private boolean bluetoothPermissionsGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,18 +65,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 startActivity(intent);
             }
         });
-        this.handler = new BluetoothHandler(this.getApplicationContext(), this);
+        this.getBluetoothPermissions();
+        this.handler = new BluetoothHandler(this.getApplicationContext(), this, bluetoothPermissionsGranted);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
+
 
     public void Connect(View view){
         try{
+
             this.handler.Initialize();
         }
         catch(Exception e){
@@ -85,16 +88,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         this.handler.SetDeviceID(ID);
     }
 
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        Log.println(Log.INFO,"Request Granted", "Request Granted");
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Log.println(Log.ERROR,"Request Denied", "Request Denied");
-    }
-
     public void LoadStoredData(){
         Logger.debug("Loading Data");
         String directory = getApplicationInfo().dataDir;
@@ -102,6 +95,38 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         this.settings = JsonFileHandler.readSettings(directory);
     }
 
+    private void getBluetoothPermissions() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.BLUETOOTH)
+                == PackageManager.PERMISSION_GRANTED) {
+            bluetoothPermissionsGranted = true;
+            Logger.debug("permission granted for location");
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.BLUETOOTH},
+                    PERMISSIONS_REQUEST_BLUETOOTH);
+        }
+    }
 
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        bluetoothPermissionsGranted = false;
+        if (requestCode
+                == PERMISSIONS_REQUEST_BLUETOOTH) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                bluetoothPermissionsGranted = true;
+                Logger.debug("permission granted for location");
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }

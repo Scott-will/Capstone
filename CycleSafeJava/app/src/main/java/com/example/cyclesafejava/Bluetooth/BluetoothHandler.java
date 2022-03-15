@@ -7,11 +7,13 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build;
 
 import com.example.cyclesafejava.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 import pub.devrel.easypermissions.EasyPermissions;
@@ -20,24 +22,26 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class BluetoothHandler {
     private BluetoothAdapter adapter;
     private BluetoothDevice device;
-    private String Name = "WH-1000XM3";// TECH HC-05";//"arduino";XM3
+    private String DeviceId = "WH-1000XM3";// TECH HC-05";//"arduino";XM3
     private final String intentMessage = "This app requires bluetooth permissions to conenct to the Arduino";
     private BluetoothSocket socket;
     private BluetoothServerSocket serverSocket;
     private Context context;
     private Activity activity;
+    private boolean BluetoothEnabled;
 
-    public BluetoothHandler(Context context, Activity activity){
+    public BluetoothHandler(Context context, Activity activity, boolean bluetoothEnabled){
         this.context = context;
         this.activity =  activity;
+        this.BluetoothEnabled = bluetoothEnabled;
     }
 
     public void SetDeviceID(String ID){
-        this.Name = ID;
+        this.DeviceId = ID;
     }
 
     public boolean Initialize() throws IOException {
-        if(!RequestPermissionForBluetooth()){
+        if(!BluetoothEnabled){
             //Do nothing
             return false;
         }
@@ -57,7 +61,8 @@ public class BluetoothHandler {
             //Log.Error("Could not initialize socket");
             return false;
         }
-
+        Listen listener = new Listen();
+        listener.Listen(socket);
         return true;
 
     }
@@ -68,7 +73,7 @@ public class BluetoothHandler {
         for(BluetoothDevice d : adapter.getBondedDevices())
         {
             Logger.debug(d.getName());
-            if(d.getName() == Name) {
+            if(d.getName() == DeviceId) {
                 device = d;
 
             }
@@ -122,55 +127,34 @@ public class BluetoothHandler {
         return true;
     }
 
-    private boolean RequestPermissionForBluetooth(){
-        /*if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S){
-            return true;
-        }*/
-        String[] permissions = new String[] {Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN};
-        if(EasyPermissions.hasPermissions(context, permissions)){
-            return true;
-        }
-        EasyPermissions.requestPermissions(activity, intentMessage, 0, permissions);
-        return true;
-    }
-    /*public async Task Listen()
-    {
-        boolean listening = true;
-        //Log.Debug("Listening");
-        InputStream instream = socket.getInputStream();
-        byte[] uintBuffer = new byte[(UInt)];
-        byte[] textBuffer;
+    public class Listen extends Thread{
+        public void Listen(BluetoothSocket socket){
+            boolean listening = true;
+            //Log.Debug("Listening");
+            try {
+                InputStream instream = socket.getInputStream();
 
-        while (listening)
-        {
-            try
-            {
-                instream.read(uintBuffer, 0, uintBuffer.length);
-                //var readLength = B.ToUInt32(uintBuffer, 0);
+                byte[] buffer = new byte[1];
+                int bytes;
 
-                textBuffer = new byte[readLength];
-                await instream.ReadAsync(textBuffer, 0, (int)readLength);
+                while (1 != 2) {
+                    try {
 
-                var message = Encoding.UTF8.GetString(textBuffer);
-                Log.Debug($"Recieved message:\n{message}");
-                Alerts.AlertService.Alert(message);
+                        bytes = instream.read(buffer);
+                        String readed = new String(buffer, 0, bytes);
+
+                        //readMessage.append(readed);
+                    } catch (Exception e) {
+
+                    }
+                }
             }
-            catch(Exception e)
-            {
-                Log.Error(e.Message);
-                listening = false;
-                break;
+            catch(Exception e){
+
             }
+            Logger.debug("Stop listening");
         }
-
-        Log.Debug("Stop listening");
     }
-
-    public void Send()
-    {
-        var outStream = socket.OutputStream;
-        outStream.WriteByte(1);
-    }*/
 }
 
 

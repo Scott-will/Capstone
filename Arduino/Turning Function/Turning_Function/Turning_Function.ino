@@ -9,6 +9,8 @@
 #define Turning_State_Control_Thres 600
 #define TURN_INTERUPT 3 // On our board Pin 3 is an interupt pin would need to check for other boards
 #define Analog_Turn_Button A1
+#define Left_Turn_LED
+#define Right_Turn_LED
 
 int val;
 int val2;
@@ -36,10 +38,10 @@ static int leftTurn(struct pt *pt){
       lastTimeBlinkL=millis();
       Serial.println("Turning Left");
       PT_WAIT_UNTIL(pt,millis()-lastTimeBlinkL>Turning_Frequency);
-      digitalWrite(LED_1_PIN,HIGH);
+      digitalWrite(Left_Turn_LED,HIGH);
       lastTimeBlinkL=millis();
       PT_WAIT_UNTIL(pt,millis()-lastTimeBlinkL>Turning_Frequency);
-      digitalWrite(LED_1_PIN,LOW);
+      digitalWrite(Left_Turn_LED,LOW);
     }
   }
 
@@ -54,14 +56,14 @@ static int rightTurn(struct pt *ptR){
   while(1){
       lastTimeBlinkR=millis();
       PT_WAIT_UNTIL(ptR,millis()-lastTimeBlinkR>10);
-   if(rightTurnS==HIGH && leftTurnS == LOW){
+   if(rightTurnS==LOW && leftTurnS == HIGH){
     Serial.println("Turning Right");
       lastTimeBlinkR=millis();
       PT_WAIT_UNTIL(ptR,millis()-lastTimeBlinkR>Turning_Frequency);
-      digitalWrite(LED_2_PIN,HIGH);
+      digitalWrite(Right_Turn_LED,HIGH);
       lastTimeBlinkR=millis();
       PT_WAIT_UNTIL(ptR,millis()-lastTimeBlinkR>Turning_Frequency);
-      digitalWrite(LED_2_PIN,LOW);
+      digitalWrite(Right_Turn_LED,LOW);
     }
   }
 

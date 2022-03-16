@@ -19,8 +19,8 @@
 
 // Definitions for all variables
 #define model 100500
-#define IR_Left_Pin A0 
-#define IR_Right_Pin A1
+#define IR_Left_Pin A1 
+#define IR_Right_Pin A0
 #define IR_Normalization 5
 #define IR_Lower_Bound 60
 #define IR_Upper_Bound 200

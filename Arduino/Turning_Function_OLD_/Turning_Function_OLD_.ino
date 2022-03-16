@@ -6,10 +6,9 @@
 
 // Definitions for variables and pins
 #define Turning_Frequency 1000
-#define TURN_INTERUPTL 7
-#define TURN_INTERUPTR 3// On our board Pin 3 is an interupt pin would need to check for other boards
-#define Left_Turn_LED 8 
-#define Right_Turn_LED 9
+#define Lower_State_Control_Turning_Thres 250
+#define Turning_State_Control_Thres 500 // Done Through Testing with resistors left
+#define TURN_INTERUPT 3 // On our board Pin 3 is an interupt pin would need to check for other boards
 #define Analog_Turn_Button A2 // 
 #define Left_Turn_LED 8
 #define Right_Turn_LED 9
@@ -84,12 +83,8 @@ void setup() {
   PT_INIT(&pt_Right_Turn);
 
   //Init the interupts pins
-  pinMode(TURN_INTERUPTR,INPUT);
-  pinMode(TURN_INTERUPTL,INPUT);
-
-  attachInterrupt(digitalPinToInterrupt(TURN_INTERUPTR), stateTurnR, RISING);
-  attachInterrupt(digitalPinToInterrupt(TURN_INTERUPTL), stateTurnL, RISING);
-  //-----------------------
+  pinMode(TURN_INTERUPT,INPUT);
+  attachInterrupt(digitalPinToInterrupt(TURN_INTERUPT), stateTurn, RISING);
 }
 
 void loop() {
@@ -102,13 +97,52 @@ void loop() {
 }
 
 
-
-
-void stateTurnR(){
-    rightTurnS=!rightTurnS;
-    leftTurnS=LOW;
+int max_local(int x, int y, int z){
+  return(max(max(x,y),z));
 }
-void stateTurnL(){
+
+
+void stateTurn(){
+
+  val = analogRead(Analog_Turn_Button);
+  Serial.print("val:");
+  Serial.println(val);
+  
+  val2 = analogRead(Analog_Turn_Button);
+  Serial.print("val2:");
+  Serial.println(val2);
+  
+  val3 = analogRead(Analog_Turn_Button);
+  Serial.print("val3:");
+  Serial.println(val3);
+  val = max_local(val,val2,val3);
+  Serial.print("Max_Val:");
+  Serial.println(val);
+  if(val>Turning_State_Control_Thres){
     leftTurnS=!leftTurnS;
     rightTurnS=LOW;
+    Serial.print("Pass Threshold:");
+    Serial.println(Turning_State_Control_Thres);
+  }else if (val>Lower_State_Control_Turning_Thres){
+    rightTurnS=!rightTurnS;
+    leftTurnS=LOW;
+    
+    Serial.print("Under Pass Threshold:");
+    Serial.println(Turning_State_Control_Thres);
+  }
+  
+}
+
+
+
+
+void stateLeftTurn() {
+  leftTurnS = !leftTurnS;
+  Serial.println("I am in state change");
+}
+
+
+void stateRightTurn() {
+  rightTurnS = !rightTurnS;
+  Serial.println("I am in right state change");
 }

@@ -1,4 +1,5 @@
 #include <SharpIR.h>
+#include <time.h>
 
 /*ProtoThreading file
  * Primary file for teh arduino program to control all periphals
@@ -18,13 +19,13 @@
 
 // Definitions for all variables
 #define model 100500
-#define IR_Left_Pin 
-#define IR_Right_Pin 
+#define IR_Left_Pin A1 
+#define IR_Right_Pin A0
 #define IR_Normalization 5
 #define IR_Lower_Bound 60
 #define IR_Upper_Bound 200
-#define LED_LEFT_BLINDSPOT  //Left BlindSpot LED
-#define LED_RIGHT_BLINDSPOT  //Right BlindSpot LED
+#define LED_LEFT_BLINDSPOT 13 //Left BlindSpot LED
+#define LED_RIGHT_BLINDSPOT 12 //Right BlindSpot LED
 
 //--------------------------
 
@@ -39,7 +40,8 @@ static struct pt pt_Left_Blind, pt_Right_Blind;
 
 int distance_left_cm;
 int distance_right_cm;
-static int BlindSpot(struct pt *ptB, int IR_distance){
+
+static int BlindSpot(struct pt *ptB, int IR_distance, int LED_PIN){
   static unsigned long lastTimeBlinkB=0;
   PT_BEGIN(ptB);
   
@@ -48,27 +50,30 @@ static int BlindSpot(struct pt *ptB, int IR_distance){
       PT_WAIT_UNTIL(ptB,millis()-lastTimeBlinkB>IR_distance/IR_Normalization);
       lastTimeBlinkB=millis();
       PT_WAIT_UNTIL(ptB,millis()-lastTimeBlinkB>IR_distance/IR_Normalization);
-      digitalWrite(LED_BLIND,HIGH);
+      digitalWrite(LED_PIN,HIGH);
       lastTimeBlinkB=millis();
       PT_WAIT_UNTIL(ptB,millis()-lastTimeBlinkB>IR_distance/IR_Normalization);
-      digitalWrite(LED_BLIND,LOW);
+      digitalWrite(LED_PIN,LOW);
     
   }
 
   PT_END(ptB);
 }
 
+
+
 void setup() {
   // put your setup code here, to run once:
     Serial.begin(9600);
     //Standard baud rate
     //Init the defined pins
-     pinMode(LED_LEFT_BLIND,OUTPUT);
-     pinMode(LED_RIGHT_BLIND,OUTPUT);
+     pinMode(LED_LEFT_BLINDSPOT,OUTPUT);
+     pinMode(LED_RIGHT_BLINDSPOT,OUTPUT);
 
      //init the protothreading stuctures
      PT_INIT(&pt_Left_Blind);
      PT_INIT(&pt_Right_Blind);
+     
 
 }
 
@@ -77,6 +82,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   IR_Left_Sensor();
   IR_Right_Sensor();
+
 }
 
 
@@ -85,12 +91,12 @@ void IR_Left_Sensor(){
   distance_left_cm = myLeftSensor.distance();
   
   // Print the measured distance to the serial monitor:
-  //Serial.print("Mean distance: ");
-  //Serial.print(distance_cm);
-  //Serial.println("cm");
+  Serial.print("LEFT Mean distance: ");
+  Serial.print(distance_left_cm);
+  Serial.println("cm");
     if(distance_left_cm < IR_Upper_Bound && distance_left_cm > IR_Lower_Bound)
   {
-    BlindSpot(&pt_Left_Blind,distance_left_cm);
+    BlindSpot(&pt_Left_Blind,distance_left_cm,LED_LEFT_BLINDSPOT);
       
   }else
   {
@@ -104,12 +110,12 @@ void IR_Right_Sensor(){
   distance_right_cm = myRightSensor.distance();
   
   // Print the measured distance to the serial monitor:
-  //Serial.print("Mean distance: ");
-  //Serial.print(distance_cm);
-  //Serial.println("cm");
+  Serial.print("Right Mean distance: ");
+  Serial.print(distance_right_cm);
+  Serial.println("cm");
     if(distance_right_cm < IR_Upper_Bound && distance_right_cm > IR_Lower_Bound)
   {
-    BlindSpot(&pt_Right_Blind,distance_right_cm);
+    BlindSpot(&pt_Right_Blind,distance_right_cm,LED_RIGHT_BLINDSPOT);
       
   }else
   {

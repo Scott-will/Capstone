@@ -25,8 +25,7 @@ public class BluetoothService extends Service {
 
     private boolean BluetoothEnabled = true;
     public boolean receivedAlert = false;
-    public BluetoothServer bluetoothServer;
-
+    public BluetoothServer bluetoothServer = new BluetoothServer();
 
     public void SetDeviceID(String ID){
         this.bluetoothServer.SetDeviceID(ID);
@@ -37,7 +36,6 @@ public class BluetoothService extends Service {
     }
 
     public boolean Initialize() throws IOException {
-        bluetoothServer.start();
         if(!BluetoothEnabled){
             //Do nothing
             return false;
@@ -59,6 +57,10 @@ public class BluetoothService extends Service {
             return false;
         }
         return true;
+    }
+
+    public void StartListening(){
+        this.bluetoothServer.start();
     }
 
     @Nullable

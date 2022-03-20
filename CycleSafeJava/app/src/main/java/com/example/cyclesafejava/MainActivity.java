@@ -2,13 +2,13 @@ package com.example.cyclesafejava;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import com.example.cyclesafejava.Json.JsonFileHandler;
 import com.example.cyclesafejava.ViewModels.BluetoothViewModel;
 import com.example.cyclesafejava.ViewModels.SettingsViewModel;
 import com.example.cyclesafejava.ViewModels.StatisticsViewModel;
@@ -41,12 +41,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    //thread pool
-    ExecutorService executorService = Executors.newFixedThreadPool(3);
-
-    //broadcastReciever maybe
-    //private MainActivityBroadCastReciever mainActivityBroadCastReciever;
-
+    private String DeviceId = "DSD TECH HC-05";
     //Services
     private BluetoothViewModel bluetoothViewModel;
     private SettingsViewModel settingsViewModel;
@@ -65,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
     //UI stuff
     private TextInputLayout textInputLayout;
-    private Button connectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,28 +132,71 @@ public class MainActivity extends AppCompatActivity {
         try {
 
             this.connected = this.bluetoothViewModel.Initialize();
+            Button ConnectButton = (Button) findViewById(R.id.connect_button);
             if (connected) {
                 Logger.debug("Connected!");
                 //change button colour here
+                ConnectButton.setBackgroundColor(Color.GREEN);
+                if(!this.settings.Brake){
+
+                }
+                if(!this.settings.BatteryNotif){
+
+                }
+                if(!this.settings.Turn){
+
+                }
+                this.bluetoothViewModel.StartListening();
             }
-        } catch (Exception e) {
+            else{
+                ConnectButton.setBackgroundColor(Color.RED);
+            }
+        }
+        catch (Exception e) {
 
         }
         return;
     }
 
     public void BrakeSwitch(View view) {
-        boolean value = this.settingsViewModel.BrakeSwitch();
+        this.settings.Brake = this.settingsViewModel.BrakeSwitch();
+        //save
+        JsonFileHandler.writeSettings(this.settings, this.getPackageResourcePath());
+        //change colour
+        Button brakeButton = (Button) findViewById(R.id.Brake);
+        if(this.settings.Brake){
+            brakeButton.setBackgroundColor(Color.GREEN);
+        }
+        else{
+            brakeButton.setBackgroundColor(Color.RED);
+        }
         this.bluetoothViewModel.SendSettings(0);
     }
 
     public void TurnSwitch(View view) {
         boolean value = this.settingsViewModel.TurnSwitch();
+        JsonFileHandler.writeSettings(this.settings, this.getPackageResourcePath());
+        Button turnButton = (Button) findViewById(R.id.Turn);
+        if(this.settings.Turn){
+
+            turnButton.setBackgroundColor(Color.GREEN);
+        }
+        else{
+            turnButton.setBackgroundColor(Color.RED);
+        }
         this.bluetoothViewModel.SendSettings(1);
     }
 
     public void BatteryNotifSwitch(View view) {
         boolean value = this.settingsViewModel.BatteryNotifSwitch();
+        JsonFileHandler.writeSettings(this.settings, this.getPackageResourcePath());
+        Button notifyButton = (Button) findViewById(R.id.Notify);
+        if(this.settings.BatteryNotif){
+            notifyButton.setBackgroundColor(Color.GREEN);
+        }
+        else{
+            notifyButton.setBackgroundColor(Color.RED);
+        }
         this.bluetoothViewModel.SendSettings(2);
     }
 
@@ -169,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
         this.bluetoothViewModel.SetDeviceId(ID);
         this.settingsViewModel.SetDeviceId(this.getApplicationContext(), ID);
     }
-
 
     private void getBluetoothPermissions() {
         /*
@@ -206,78 +242,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
-   /* public class MainActivityBroadCastReciever extends BroadcastReceiver{
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("Low Battery")){
-                Alert();
-            }
-        }
-
-        public void Alert(){
-            AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
-            alert.setTitle("CycleSafe Battery Low");
-            alert.setMessage("Your battery is low for the CycleSafe equipment");
-            alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            alert.show();
-        }
-    }*/
-
-
-
-    /*ExecutorService executorService = Executors.newFixedThreadPool(3);
-    private ActivityMainBinding binding;
-    private TextInputLayout textInputLayout;
-    //private BluetoothService handler;
-    ListView statisticsList;
-    //private Settings settings;
-    //private Statistics statistics;
-    //private static final int PERMISSIONS_REQUEST_BLUETOOTH = 2;
-    //private boolean bluetoothPermissionsGranted = false;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = binding.viewPager;
-        viewPager.setAdapter(sectionsPagerAdapter);
-        TabLayout tabs = binding.tabs;
-        tabs.setupWithViewPager(viewPager);
-        FloatingActionButton fab = binding.fab;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        AppContainer appContainer = ((CycleSafe) getApplication()).appContainer;
-
-        /*statistics = JsonFileHandler.readStatistics(this.getPackageResourcePath());
-        settings = JsonFileHandler.readSettings(this.getPackageResourcePath());
-        this.getBluetoothPermissions();
-        this.handler = new BluetoothService(this.getApplicationContext(), this, bluetoothPermissionsGranted);
-        Intent intent = new Intent(this, BluetoothService.class);
-        intent.setAction("Listen");
-        //Set repeated Task
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, 10, pendingIntent);
-    }
-
-
-
-}*/

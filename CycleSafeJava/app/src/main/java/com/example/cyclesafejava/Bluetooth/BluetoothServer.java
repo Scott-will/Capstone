@@ -39,7 +39,7 @@ public class BluetoothServer extends Thread {
                 byte[] buffer = new byte[1];
                 int bytes = instream.read(buffer);
                 String readed = new String(buffer, 0, bytes);
-                if (readed.equals("5")) {
+                if (readed.equals("B")) {
                     //broadcast();
                 }
                 //readMessage.append(readed);

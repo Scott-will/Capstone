@@ -75,7 +75,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //
     private boolean MarkerEnabled = false;
-    private boolean StartedRide = true;
+    private boolean StartedRide = false;
+
     //
     private GoogleMap mMap;
 
@@ -524,7 +525,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         @Override
         protected String doInBackground(String... url) {
-
             String data = "";
 
             try {
@@ -639,6 +639,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return data;
     }
-
 
 }

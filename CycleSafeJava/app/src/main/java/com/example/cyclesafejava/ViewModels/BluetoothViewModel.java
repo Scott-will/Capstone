@@ -26,6 +26,10 @@ public class BluetoothViewModel {
 
     }
 
+    public void StartListening(){
+        this.handler.StartListening();
+    }
+
     public void SetDeviceId(String Id){
         this.handler.SetDeviceID(Id);
     }

@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.cyclesafejava.R;
-import com.example.cyclesafejava.RideFragment;
 import com.example.cyclesafejava.SettingsFragment;
 import com.example.cyclesafejava.StatisticsFragment;
 
@@ -35,13 +34,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (position){
             case 0:
-                fragment = new RideFragment();
+                fragment = new StatisticsFragment();
                 break;
             case 1:
                 fragment = new SettingsFragment();
-                break;
-            case 2:
-                fragment = new StatisticsFragment();
                 break;
         }
         return fragment;
@@ -56,6 +52,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 3 total pages.
-        return 3;
+        return 2;
     }
 }

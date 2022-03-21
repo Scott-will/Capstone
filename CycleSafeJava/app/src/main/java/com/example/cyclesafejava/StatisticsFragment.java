@@ -36,7 +36,6 @@ public class StatisticsFragment extends Fragment {
     public void LoadStoredData(){
         String directory = getActivity().getApplicationInfo().dataDir;
         this.statistics = JsonFileHandler.readStatistics(directory);
-
     }
 
     public void CreateListView(LinearLayout ll){
@@ -54,6 +53,5 @@ public class StatisticsFragment extends Fragment {
         catch (Exception e){
 
         }
-
     }
 }

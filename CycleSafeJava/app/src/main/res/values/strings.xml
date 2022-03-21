@@ -11,4 +11,10 @@
     <string name="pick_place">Choose a place</string>
     <string name="SetMarker">Add Marker</string>
     <string name="GoBack">Back To Main</string>
+    <string-array name="components">
+        <item>Notifications</item>
+        <item>Turn Signals</item>
+        <item>Blind Spot Detection</item>
+    </string-array>
+
 </resources>

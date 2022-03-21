@@ -2,8 +2,11 @@ package com.example.cyclesafejava.Json;
 
 import android.util.JsonReader;
 
+import androidx.annotation.RequiresPermission;
+
 import com.example.cyclesafejava.data.Settings;
 import com.example.cyclesafejava.data.Statistics;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -11,6 +14,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,12 +26,34 @@ public class JsonFileHandler {
     private static String SettingsFileName = "Settings.json";
     private static String StatisticsFileName = "Statistics.json";
 
-    public static void writeStatistics(){
+    public static void writeStatistics(Statistics statistics, String directory){
+        Gson gson = new Gson();
+        String statisticsString = gson.toJson(statistics);
+        Path path = Paths.get(directory, StatisticsFileName);
+        try{
+            FileWriter file = new FileWriter(StatisticsFileName);
+            file.write(statisticsString);
+            file.flush();
+            file.close();
+        }
+        catch(Exception e){
 
+        }
     }
 
-    public static void writeSettings(){
+    public static void writeSettings(Settings settings, String directory){
+        Gson gson = new Gson();
+        String settingsString = gson.toJson(settings);
+        Path path = Paths.get(directory, SettingsFileName);
+        try{
+            FileWriter file = new FileWriter(SettingsFileName);
+            file.write(settingsString);
+            file.flush();
+            file.close();
+        }
+        catch(Exception e){
 
+        }
     }
 
     public static Statistics readStatistics(String directory){

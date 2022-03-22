@@ -43,18 +43,30 @@ void loop() {
       digitalWrite(BLIND_TEST,HIGH);
       //Serial.println("IR ON");
       
+    }else
+    {
+      digitalWrite(BLIND_TEST,LOW);
     }
+    
     if(Features [1] == 1)
     {
       digitalWrite(Turn_Test,HIGH);
       //Serial.println("Turning ON");
       
+    }else
+    {
+      digitalWrite(Turn_Test,LOW);
     }
+    
     if(Features[2] == 1)
     {
       digitalWrite(Brake_Test,HIGH);
       //Serial.println("brake ON");
+    }else
+    {
+       digitalWrite(Brake_Test,LOW);
     }
+    
     if(Features[3] == 1)
     {
       digitalWrite(Noti_Test,HIGH);
@@ -63,9 +75,7 @@ void loop() {
     }
     else
     {
-      digitalWrite(BLIND_TEST,LOW);
-      digitalWrite(Turn_Test,LOW);
-      digitalWrite(Brake_Test,LOW);
+      
       digitalWrite(Noti_Test,LOW); 
     }
 

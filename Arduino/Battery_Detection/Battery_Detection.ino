@@ -2,13 +2,13 @@
 
 
 // Definitions for variables and pins------------
-#define Battery_High_Threshold 5
-#define Battery_Medium_Threshold 3 
-#define Battery_Low_Threshold 1 
-#define Battery_Probe_Pin A5 //Needs to be an Analog Pin
-#define Battery_Led_High 15
-#define Battery_Led_Med 14
-#define Battery_Led_Low 13
+#define Battery_High_Threshold 5 // Voltage Threshold
+#define Battery_Medium_Threshold 3 // Voltage Threshold 
+#define Battery_Low_Threshold 1  // Voltage Threshold
+#define Battery_Probe_Pin A2 //Needs to be an Analog Pin
+#define Battery_Led_High 11 //Pins to control battery light
+#define Battery_Led_Med 12 //Pins to control battery light
+#define Battery_Led_Low 13 //Pins to control battery light
 #define Error_Time 1000 //delay time for the error code,in msec
 
 

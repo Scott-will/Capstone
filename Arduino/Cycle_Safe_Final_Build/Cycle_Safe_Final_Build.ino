@@ -7,6 +7,7 @@
  */ //Pt library used for protothreading
  
 #include <pt.h>
+#include <SoftwareSerial.h>
 
 
 /* Model : Model numbers for different Sharp sensors needed to config the IR sensor
@@ -16,37 +17,50 @@
   GP2YA41SK0F --> 430
 */
 
-//Leftn  Turn is 466 ohms
-//Right turn is 2000 ohms
-//Common resisters is 477 Ohms
 
 // Definitions for variables and pins------------
 #define model 100500
-#define IR_Left_Pin A1 //Gren wire from ir box
+//Analog Pins
 #define IR_Right_Pin A0 //yellow wire from ir box
+#define IR_Left_Pin A1 //Gren wire from ir box
+#define Battery_Probe_Pin A2 //Needs to be an Analog Pin
+
+//Constant Values
 #define IR_Normalization 5
 #define IR_Lower_Bound 60
 #define IR_Upper_Bound 100
-#define Led_Left_Blindspot 12 //Left BlindSpot LED
-#define Led_Right_Blindspot 13 //Right BlindSpot LED
 #define Turning_Frequency 1000
+#define Error_Time 1000 //delay time for the error code,in msec
+#define Number_Of_Features 4//[Blindspot,Turning,Braking,Notifications]
+#define Battery_High_Threshold 5 // Voltage Threshold
+#define Battery_Medium_Threshold 3 // Voltage Threshold 
+#define Battery_Low_Threshold 1  // Voltage Threshold
 
-#define TURN_INTERUPTR 7
+//Digital Pins
+#define TURN_INTERUPTR 2 // 2 and 3 are interupt pins cannot switch these
 #define TURN_INTERUPTL 3
 
-#define Left_Turn_LED 8 
-#define Right_Turn_LED 9
-#define Number_Of_Features 4 //[Data Sent,Blindspot,Turning,Notifications]
-#define Number_Of_Attempts 5
+#define Brake_Pin 4
+#define Left_Turn_LED 5 
+#define Right_Turn_LED 6
+#define Led_Left_Blindspot 7 //Left BlindSpot LED
+#define Led_Right_Blindspot 8 //Right BlindSpot LED
+#define TX_PIN 9 // Goes to the RX PIN on bluetooth module
+#define RX_PIN 10 // Goes to the TX PIN on bluetooth module, Needs a voltage divider with a 1Kohm and 2 Kohm resistors. Pin is connected to the 1 Kohm branch
+#define Battery_Led_High 11 //Pins to control battery light
+#define Battery_Led_Med 12 //Pins to control battery light
+#define Battery_Led_Low 13 //Pins to control battery light
 
 
-int val;
-int val2;
-int val3;
-int Connection_Attempts = 0;
+
+
+//Variables
+int Battery_Volts;
+int counter = 0;
 int distance_left_cm;
 int distance_right_cm;
-int Features[Number_Of_Features] = {0,1,1,1};
+int feature_index;
+bool Features[Number_Of_Features] = {1,1,1,1};
 //-----------------------------------------------
 
 //Decleration of ProtoThreading Structures------------------
@@ -72,6 +86,9 @@ SharpIR myRightSensor = SharpIR(IR_Right_Pin, model);
 //----------------------------------------------------
 
 
+//Bluetooth Serial Init--------------------------------
+SoftwareSerial CycleBlue = SoftwareSerial(RX_PIN,TX_PIN);
+//-----------------------------------------------------
 
 // Decleration of Protothreading Functions--------------------
 
@@ -156,12 +173,19 @@ static int BlindSpot(struct pt *ptB, int IR_distance, int LED_PIN){
 
 
 void setup() {
+  
   Serial.begin(9600);
+  CycleBlue.begin(9600);
   //Init defined pins
   pinMode(Led_Left_Blindspot,OUTPUT);
   pinMode(Led_Right_Blindspot,OUTPUT);
   pinMode(Left_Turn_LED,OUTPUT);
   pinMode(Right_Turn_LED,OUTPUT);
+  pinMode(Brake_Pin,OUTPUT);
+  pinMode(Battery_Probe_Pin,INPUT);
+  pinMode(Battery_Led_High,OUTPUT);
+  pinMode(Battery_Led_Med,OUTPUT);
+  pinMode(Battery_Led_Low,OUTPUT);
   //-----------------
   
   //Init of protothreading functions
@@ -185,36 +209,40 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //Upon Reset this loop will run until a connection is established and then it will either grab the data from the phone over bluetooth or it will assume no connection can be 
-  //established and assume all functions are to remain on
-  //while(Connection_Attempts < Number_Of_Attempts){
-    //This is where the bluetooth reading will come into play
 
-    //if(Features[0] == 1){
-      //Features array takes all the data sent and stores it
-      //break;
-    //}
-    //else{
-      //Featuers array keeps default values
-    //}
-    //Connection_Attempts++;
-  //}
+  if(CycleBlue.available()>0){
+    
+     Bluetooth_Handler();
+  }
 
-  //if(Features[1] == 1){
+
+  Battery_Volts = Battery_Status; // Probes for voltage value
+  Battery_Indication(Battery_Volts);
+  
+  if(Features[0] == 1){
   
   IR_Left_Sensor();
   IR_Right_Sensor();
   
-  //}
-  //else if(Features[2] == 1){
+  }
+  
+  if(Features[1] == 1){
     
   leftTurn(&pt_Left_Turn);
   rightTurn(&pt_Right_Turn);  
   
-  //}
-  //else if(Features[3]==1){
-    //Send notifications based on conditions
-  //}
+  }
+  
+  if(Features[2] == 1){
+
+    digitalWrite(Brake_Pin,HIGH);
+    
+  }else{
+    
+      digitalWrite(Brake_Pin,LOW);
+    
+    }
+ 
 
 }
 
@@ -271,4 +299,74 @@ void stateTurnR(){
 void stateTurnL(){
     leftTurnS=!leftTurnS;
     rightTurnS=LOW;
+}
+
+void Bluetooth_Handler(){
+  
+  feature_index = CycleBlue.read();
+  Features[feature_index] = !Features[feature_index];
+
+}
+
+int Battery_Status(){
+
+  //Probe the battery to check voltage
+  return(analogRead(Battery_Probe_Pin));
+  
+  
+}
+
+void Battery_Indication(int Battery_Volts){
+
+  // Sets the LEDS accordingly
+  if( Battery_Volts <= Battery_High_Threshold && Battery_Volts > Battery_Medium_Threshold){
+    
+    digitalWrite(Battery_Led_High, HIGH);
+    digitalWrite(Battery_Led_Med, HIGH);
+    digitalWrite(Battery_Led_Low, HIGH);
+     
+  }else if(Battery_Volts <= Battery_Medium_Threshold && Battery_Volts > Battery_Low_Threshold){
+    
+    digitalWrite(Battery_Led_High, LOW);
+    digitalWrite(Battery_Led_Med, HIGH);
+    digitalWrite(Battery_Led_Low, HIGH);
+    
+  }else if(Battery_Volts <= Battery_Low_Threshold && counter == 0){
+    
+    digitalWrite(Battery_Led_High, LOW);
+    digitalWrite(Battery_Led_Med, LOW);
+    digitalWrite(Battery_Led_Low, HIGH);
+    Hardware_Battery_Notification();
+    counter ++;
+
+    if(Features[3] == 1){
+      Battery_Notification();
+    }
+  }
+  
+}
+
+
+void Battery_Notification(){
+
+  CycleBlue.write("b");
+
+
+}
+
+void Hardware_Battery_Notification(){
+  
+   int i = 0;
+    while(i<5){
+
+    digitalWrite(Led_Left_Blindspot,HIGH);
+    digitalWrite(Led_Right_Blindspot,LOW);
+    delay(Error_Time);
+    digitalWrite(Led_Left_Blindspot,LOW);
+    digitalWrite(Led_Right_Blindspot,HIGH);
+    delay(Error_Time);
+    i++;
+    
+  }
+    
 }

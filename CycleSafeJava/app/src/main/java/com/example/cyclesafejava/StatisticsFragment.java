@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cyclesafejava.Json.JsonFileHandler;
+import com.example.cyclesafejava.ViewModels.StatisticsViewModel;
 import com.example.cyclesafejava.data.Statistics;
 
 import java.util.ArrayList;
@@ -22,20 +23,22 @@ public class StatisticsFragment extends Fragment {
 
     private Statistics statistics;
     private ListView statisticsList;
-
+    private StatisticsViewModel statisticsViewModel;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LinearLayout ll = (LinearLayout)inflater.inflate(R.layout.statisticsfragment_layout, container, false);
+
+        AppContainer appContainer =((CycleSafe) this.getActivity().getApplication()).appContainer;
+        this.statisticsViewModel = new StatisticsViewModel(appContainer.statisticsService);
         this.LoadStoredData();
         this.CreateListView(ll);
-        //some code
         return ll;
+
     }
 
     public void LoadStoredData(){
-        String directory = getActivity().getApplicationInfo().dataDir;
-        this.statistics = JsonFileHandler.readStatistics(directory);
+        this.statistics = statisticsViewModel.LoadStatistics(this.getActivity().getApplicationContext());
     }
 
     public void CreateListView(LinearLayout ll){

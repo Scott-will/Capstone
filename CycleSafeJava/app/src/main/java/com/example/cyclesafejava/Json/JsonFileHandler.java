@@ -4,6 +4,7 @@ import android.util.JsonReader;
 
 import androidx.annotation.RequiresPermission;
 
+import com.example.cyclesafejava.Logger;
 import com.example.cyclesafejava.data.Settings;
 import com.example.cyclesafejava.data.Statistics;
 import com.google.gson.Gson;
@@ -26,32 +27,39 @@ public class JsonFileHandler {
     private static String SettingsFileName = "Settings.json";
     private static String StatisticsFileName = "Statistics.json";
 
-    public static void writeStatistics(Statistics statistics, String directory){
+    public static void writeStatistics(Statistics statistics, File root){
         Gson gson = new Gson();
-        String statisticsString = gson.toJson(statistics);
-        Path path = Paths.get(directory, StatisticsFileName);
+        String settingsString = gson.toJson(statistics);
         try{
-            FileWriter file = new FileWriter(StatisticsFileName);
-            file.write(statisticsString);
-            file.flush();
-            file.close();
+            File file = new File(root.getPath() + "//" + StatisticsFileName);
+            if(!file.createNewFile()){
+                Logger.debug("Failed");
+            }
+            FileWriter fileWriter = new FileWriter(file, false);
+            fileWriter.write(settingsString);
+            fileWriter.flush();
+            fileWriter.close();
         }
         catch(Exception e){
-
+            Logger.debug(e.getMessage());
         }
     }
 
-    public static void writeSettings(Settings settings, String directory){
+    public static void writeSettings(Settings settings, File root){
         Gson gson = new Gson();
         String settingsString = gson.toJson(settings);
-        Path path = Paths.get(directory, SettingsFileName);
         try{
-            FileWriter file = new FileWriter(SettingsFileName);
-            file.write(settingsString);
-            file.flush();
-            file.close();
+            File file = new File(root.getPath() + "//" + SettingsFileName);
+            if(!file.createNewFile()){
+                Logger.debug("Failed");
+            }
+            FileWriter fileWriter = new FileWriter(file, false);
+            fileWriter.write(settingsString);
+            fileWriter.flush();
+            fileWriter.close();
         }
         catch(Exception e){
+            Logger.debug(e.getMessage());
 
         }
     }
@@ -65,12 +73,12 @@ public class JsonFileHandler {
         }
         else {
             File statisticsFile = new File(path.toString());
-            return new Statistics(0.0, 0.0, 0.0);
+            return new Statistics(10.5, 15.2, 105.17);
         }
     }
 
     public static Settings readSettings(String directory){
-        Path path = Paths.get(directory, StatisticsFileName);
+        Path path = Paths.get(directory, SettingsFileName);
         if(Files.exists(path)){
             String content = ReadFile(path.toString());
             Settings settings = JsonParser.ParseSettings(content);

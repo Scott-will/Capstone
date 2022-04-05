@@ -13,12 +13,26 @@ public class Event {
 
     public static final String BATTERY = "BATTERY";
 
+    public static final String STATSTICS = "STATISTICS";
+
+    public double speed;
+    public double fastestSpeed;
+    public double distance;
+
     int mResult;
     String mResultValue;
 
     public Event(int resultCode, String resultValue){
         mResult = resultCode;
         mResultValue = resultValue;
+    }
+
+    public Event(int resultCode, String resultValue, double speed, double distance, double fastestSpeed){
+        mResult = resultCode;
+        mResultValue = resultValue;
+        this.speed = speed;
+        this.fastestSpeed = fastestSpeed;
+        this.distance = distance;
     }
 
     public int getResult(){

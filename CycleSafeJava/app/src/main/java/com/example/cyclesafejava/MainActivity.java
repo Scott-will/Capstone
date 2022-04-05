@@ -41,7 +41,6 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String DeviceId = "DSD TECH HC-05";
     //Services
     private BluetoothViewModel bluetoothViewModel;
     private SettingsViewModel settingsViewModel;
@@ -90,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         this.statisticsViewModel = new StatisticsViewModel(appContainer.statisticsService);
         this.settings = settingsViewModel.LoadSettings(this.getApplicationContext());
         this.statistics = statisticsViewModel.LoadStatistics(this.getApplicationContext());
-
     }
 
     @Override
@@ -102,7 +100,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        try{
+            EventBus.getDefault().register(this);
+        }
+       catch(Exception e){
+
+       }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try{
+            EventBus.getDefault().register(this);
+        }
+        catch(Exception e){
+
+        }
     }
 
     @Override
@@ -130,22 +144,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void Connect(View view) {
         try {
-
+            this.bluetoothViewModel.SetDeviceId(this.settings.DeviceID);
             this.connected = this.bluetoothViewModel.Initialize();
             Button ConnectButton = (Button) findViewById(R.id.connect_button);
             if (connected) {
                 Logger.debug("Connected!");
-                //change button colour here
                 ConnectButton.setBackgroundColor(Color.GREEN);
-                if(!this.settings.Brake){
-
-                }
-                if(!this.settings.BatteryNotif){
-
-                }
-                if(!this.settings.Turn){
-
-                }
+                Button button = (Button) findViewById(R.id.Brake);
+                ChangeColourOfButton(button, this.settings.Brake);
+                button = (Button) findViewById(R.id.Turn);
+                ChangeColourOfButton(button, this.settings.Turn);
+                button = (Button) findViewById(R.id.Notify);
+                ChangeColourOfButton(button, this.settings.BatteryNotif);
                 this.bluetoothViewModel.StartListening();
             }
             else{
@@ -159,44 +169,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void BrakeSwitch(View view) {
-        this.settings.Brake = this.settingsViewModel.BrakeSwitch();
+        this.settings.Brake = this.settingsViewModel.BrakeSwitch(this.settings);
         //save
-        JsonFileHandler.writeSettings(this.settings, this.getPackageResourcePath());
+        JsonFileHandler.writeSettings(this.settings, this.getFilesDir());
         //change colour
         Button brakeButton = (Button) findViewById(R.id.Brake);
-        if(this.settings.Brake){
-            brakeButton.setBackgroundColor(Color.GREEN);
-        }
-        else{
-            brakeButton.setBackgroundColor(Color.RED);
-        }
+        ChangeColourOfButton(brakeButton, this.settings.Brake);
         this.bluetoothViewModel.SendSettings(0);
+        this.settingsViewModel.SaveSettings(this.getApplicationContext(), this.settings);
     }
 
     public void TurnSwitch(View view) {
-        boolean value = this.settingsViewModel.TurnSwitch();
-        JsonFileHandler.writeSettings(this.settings, this.getPackageResourcePath());
+        this.settings.Turn = this.settingsViewModel.TurnSwitch(this.settings);
+        JsonFileHandler.writeSettings(this.settings, this.getFilesDir());
         Button turnButton = (Button) findViewById(R.id.Turn);
-        if(this.settings.Turn){
-
-            turnButton.setBackgroundColor(Color.GREEN);
-        }
-        else{
-            turnButton.setBackgroundColor(Color.RED);
-        }
+        ChangeColourOfButton(turnButton, this.settings.Turn);
         this.bluetoothViewModel.SendSettings(1);
     }
 
     public void BatteryNotifSwitch(View view) {
-        boolean value = this.settingsViewModel.BatteryNotifSwitch();
-        JsonFileHandler.writeSettings(this.settings, this.getPackageResourcePath());
+        this.settings.BatteryNotif = this.settingsViewModel.BatteryNotifSwitch(this.settings);
+        JsonFileHandler.writeSettings(this.settings, this.getFilesDir());
         Button notifyButton = (Button) findViewById(R.id.Notify);
-        if(this.settings.BatteryNotif){
-            notifyButton.setBackgroundColor(Color.GREEN);
-        }
-        else{
-            notifyButton.setBackgroundColor(Color.RED);
-        }
+        ChangeColourOfButton(notifyButton, this.settings.BatteryNotif);
         this.bluetoothViewModel.SendSettings(2);
     }
 
@@ -204,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         this.textInputLayout = findViewById(R.id.DeviceID);
         String ID = this.textInputLayout.getEditText().getText().toString().trim();
         this.bluetoothViewModel.SetDeviceId(ID);
-        this.settingsViewModel.SetDeviceId(this.getApplicationContext(), ID);
+        this.settingsViewModel.SetDeviceId(this.getApplicationContext(),this.settings, ID);
     }
 
     private void getBluetoothPermissions() {
@@ -225,6 +220,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void ChangeColourOfButton(Button button , boolean value){
+        if(value){
+            button.setBackgroundColor(Color.GREEN);
+        }
+        else{
+            button.setBackgroundColor(Color.RED);
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,

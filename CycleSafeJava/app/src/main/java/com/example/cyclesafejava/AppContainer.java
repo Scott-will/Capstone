@@ -10,6 +10,4 @@ public class AppContainer {
     public BluetoothService bluetoothService = new BluetoothService();
     public SettingsService settingsService = new SettingsService();
     public StatisticsService statisticsService = new StatisticsService();
-    public MapsService mapsService = new MapsService();
-
 }

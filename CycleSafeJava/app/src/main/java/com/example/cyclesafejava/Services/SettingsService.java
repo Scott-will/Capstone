@@ -9,7 +9,7 @@ import com.example.cyclesafejava.data.Statistics;
 public class SettingsService {
 
     public void Save(Context context, Settings settings){
-        JsonFileHandler.writeSettings(settings, context.getPackageResourcePath());
+        JsonFileHandler.writeSettings(settings, context.getFilesDir());
     }
 
     public Settings LoadData(String path){

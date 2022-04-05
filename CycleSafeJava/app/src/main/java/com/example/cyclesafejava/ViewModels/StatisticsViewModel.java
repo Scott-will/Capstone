@@ -15,4 +15,8 @@ public class StatisticsViewModel {
     public Statistics LoadStatistics(Context context){
         return this.statisticsService.LoadData(context.getPackageResourcePath());
     }
+
+    public void SaveStatistics(Context context, Statistics statistics){
+        this.statisticsService.SaveStatistics(context, statistics);
+    }
 }

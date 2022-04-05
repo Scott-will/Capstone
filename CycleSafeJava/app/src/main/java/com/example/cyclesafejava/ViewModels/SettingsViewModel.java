@@ -9,36 +9,38 @@ import com.example.cyclesafejava.data.Statistics;
 
 public class SettingsViewModel {
     private SettingsService settingsService;
-    private Settings settings;
 
     public SettingsViewModel(SettingsService settingsService){
         this.settingsService = settingsService;
     }
 
-    public void SetDeviceId(Context context, String Id){
-        this.settings.DeviceID = Id;
-        this.settingsService.Save(context, this.settings);
+    public void SaveSettings(Context context, Settings settings){
+        this.settingsService.Save(context, settings);
+    }
+    public void SetDeviceId(Context context, Settings settings, String Id){
+        settings.DeviceID = Id;
+        this.settingsService.Save(context, settings);
     }
 
-    public boolean BrakeSwitch(){
-        this.settings.Brake = !this.settings.Brake;
-        return this.settings.Brake;
+    public boolean BrakeSwitch(Settings settings){
+        settings.Brake = !settings.Brake;
+        return settings.Brake;
 
     }
 
-    public boolean BatteryNotifSwitch(){
-        this.settings.BatteryNotif = !this.settings.BatteryNotif;
-        return this.settings.BatteryNotif;
+    public boolean BatteryNotifSwitch(Settings settings){
+        settings.BatteryNotif = !settings.BatteryNotif;
+        return settings.BatteryNotif;
     }
 
-    public boolean TurnSwitch(){
-        this.settings.Turn = !this.settings.Turn;
-        return this.settings.Turn;
+    public boolean TurnSwitch(Settings settings){
+        settings.Turn = !settings.Turn;
+        return settings.Turn;
     }
 
     public Settings LoadSettings(Context context){
-        this.settings = this.settingsService.LoadData(context.getPackageResourcePath());
-        return this.settings;
+        Settings settings = this.settingsService.LoadData(context.getFilesDir().toString());
+        return settings;
 
     }
 

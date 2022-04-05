@@ -27,38 +27,44 @@
         android:id="@+id/setRangeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/SetMarker"
-        android:onClick="SetMarker"/>
+        android:onClick="SetMarker"
+        android:text="@string/SetMarker" />
 
     <TextView
         android:id="@+id/Speed"
-        android:layout_width="wrap_content"
+        android:layout_width="83dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="353dp"
-        android:layout_marginBottom="489dp"
-        android:text="TextView" />
+        android:layout_marginEnd="310dp"
+        android:layout_marginBottom="55dp"
+        android:background="@color/purple_200"
+        android:text="Speed: "
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/Distance"
-        android:layout_width="wrap_content"
+        android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="352dp"
-        android:layout_marginBottom="542dp"
-        android:text="TextView" />
+        android:layout_marginEnd="185dp"
+        android:layout_marginBottom="55dp"
+        android:background="@color/purple_200"
+        android:text="Distance: "
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/FastestSpeed"
-        android:layout_width="wrap_content"
+        android:layout_width="134dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="353dp"
-        android:layout_marginBottom="516dp"
-        android:text="TextView" />
+        android:layout_marginEnd="19dp"
+        android:layout_marginBottom="57dp"
+        android:background="@color/purple_200"
+        android:text="Fastest Speed:"
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/StartRide"
@@ -68,8 +74,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="274dp"
         android:layout_marginBottom="9dp"
-        android:text="Start Ride"
-        android:onClick="StartRide"/>
+        android:onClick="StartRide"
+        android:text="Start" />
 
 </RelativeLayout>
 

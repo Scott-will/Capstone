@@ -5,31 +5,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.app.Activity;
-import android.app.AlarmManager;
+import android.Manifest;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.example.cyclesafejava.Json.DirectionsJSONParser;
 import com.example.cyclesafejava.Services.MapsService;
+import com.example.cyclesafejava.Tasks.DownloadTask;
+import com.example.cyclesafejava.ViewModels.StatisticsViewModel;
 import com.example.cyclesafejava.data.Events.Event;
 import com.example.cyclesafejava.data.Events.LocationEvent;
-import com.example.cyclesafejava.data.Events.StatisticsEvent;
+import com.example.cyclesafejava.data.Statistics;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,8 +36,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.cyclesafejava.databinding.ActivityMaps2Binding;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -50,34 +44,21 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Timer;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    //
+    // checks
     private boolean MarkerEnabled = false;
     private boolean StartedRide = false;
 
-    //
+    // Map stuff
     private GoogleMap mMap;
 
     private boolean locationPermissionGranted;
@@ -86,7 +67,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION = 2;
 
+    //UI
     private TextView speedText;
     private TextView distanceText;
     private TextView fastestSpeedTest;
@@ -104,8 +87,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Used for selecting the current place.
     private static final int M_MAX_ENTRIES = 5;
 
+    //Container
     private AppContainer appContainer;
+
+    //Services
     private MapsService mapsService;
+
+    //ViewModels
+    private StatisticsViewModel statisticsViewModel;
+
+    //Data
+    private Statistics statistics;
 
     /**
      * Manipulates the map once available.
@@ -136,13 +128,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
             Logger.debug("Using saved state");
         }
+        //Init appContainer
         this.appContainer = ((CycleSafe) getApplication()).appContainer;
-        this.mapsService = appContainer.mapsService;
+
+        //Statistics
+        this.statisticsViewModel = new StatisticsViewModel(appContainer.statisticsService);
+        this.statistics = this.statisticsViewModel.LoadStatistics(this.getApplicationContext());
+
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_maps2);
         this.speedText = (TextView) findViewById(R.id.Speed) ;
         this.distanceText = (TextView) findViewById(R.id.Distance) ;
         this.fastestSpeedTest = (TextView) findViewById(R.id.FastestSpeed) ;
+        this.fastestSpeedTest.setText("Fastest Speed: " + statistics.FastestSpeed.toString());
+        this.distanceText.setText("Distance: " + statistics.TotalDistance.toString());
+        this.speedText.setText("Speed: " + statistics.LongestRide.toString());
+
         // Construct a PlacesClient
         Places.initialize(getApplicationContext(), getString(R.string.maps_api_key));
         placesClient = Places.createClient(this);
@@ -150,10 +151,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        //Fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        //this.CalculateDistance();
     }
 
     @Override
@@ -163,7 +164,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void StartRide(View view){
-        this.mapsService.startService(new Intent());
+        Button startButton = findViewById(R.id.StartRide);
+        Intent intent = new Intent(this, MapsService.class);
+        if (startButton.getText().equals("Start")) {
+            this.getApplicationContext().startService(intent);
+            startButton.setText("Stop");
+            //logic for trip finished here
+        }
+        else{
+            this.getApplicationContext().stopService(intent);
+            startButton.setText("Start");
+        }
+
         return;
     }
 
@@ -175,7 +187,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        try{
+            EventBus.getDefault().register(this);
+        }
+        catch(Exception e){
+
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try{
+            EventBus.getDefault().register(this);
+        }
+        catch(Exception e){
+
+        }
     }
 
     @Override
@@ -184,13 +212,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStop();
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onEvent(Event e){
         if(e.getmResultValue().equals(Event.LOCATION)){
             Location previousLocation = lastKnownLocation;
             this.getDeviceLocation();
             Location currentLocation = lastKnownLocation;
-            EventBus.getDefault().post(new LocationEvent(currentLocation, lastKnownLocation));
+            EventBus.getDefault().post(new LocationEvent(currentLocation, previousLocation));
         }
         else if(e.getmResultValue().equals(Event.BATTERY)){
             AlertDialog alert = new AlertDialog.Builder(MapsActivity.this).create();
@@ -204,13 +232,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
             alert.show();
         }
-    }
+        else if(e.getmResultValue().equals(Event.STATSTICS)){
+            Logger.debug("Stats event recieved");
+            runOnUiThread(new Runnable() {
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onStatsEvent(StatisticsEvent e){
-        this.speedText.setText(Double.toString(e.getSpeed()));
-        this.distanceText.setText(Double.toString(e.getDistance()));
-        this.fastestSpeedTest.setText(Double.toString(e.getFastestSpeed()));
+                @Override
+                public void run() {
+                    Logger.debug("I am Running to update text");
+                    speedText.setText("Speed: " + Double.toString(Math.round(e.speed*100.0)/100.0));
+                    distanceText.setText("Distance: " + Double.toString(Math.round(e.distance*100.0)/100.0));
+                    fastestSpeedTest.setText("Fastest Speed: " + Double.toString(Math.round(e.fastestSpeed*100.0)/100.0));
+                }
+            });
+            this.statistics.CurrentSpeed = e.speed;
+            this.statistics.Distance = e.distance;
+            this.statistics.FastestSpeed = e.fastestSpeed;
+            this.statistics.TotalDistance += e.distance;
+            this.statisticsViewModel.SaveStatistics(this.getApplicationContext(), this.statistics);
+        }
     }
 
     private void getLocationPermission() {
@@ -229,6 +268,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            locationPermissionGranted = true;
+            Logger.debug("permission granted for location");
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION);
+        }
     }
 
     @Override
@@ -238,6 +287,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationPermissionGranted = false;
         if (requestCode
                 == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationPermissionGranted = true;
+                Logger.debug("permission granted for location");
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+        if (requestCode
+                == PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION) {// If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
@@ -353,6 +412,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Logger.debug("Task to get location was successful");
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = task.getResult();
+                            if(Looper.getMainLooper().getThread() == Thread.currentThread()){
+                                Logger.debug("Im in main thread");
+                            }
                             if (lastKnownLocation != null) {
                                 Logger.debug("Last known locaiton known, moving camera");
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
@@ -465,40 +527,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    /*private void openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // The "which" argument contains the position of the selected item.
-                LatLng markerLatLng = likelyPlaceLatLngs[which];
-                String markerSnippet = likelyPlaceAddresses[which];
-                if (likelyPlaceAttributions[which] != null) {
-                    markerSnippet = markerSnippet + "\n" + likelyPlaceAttributions[which];
-                }
-
-                // Add a marker for the selected place, with an info window
-                // showing information about that place.
-                Logger.debug("adding marker");
-                mMap.addMarker(new MarkerOptions()
-                        .title(likelyPlaceNames[which])
-                        .position(markerLatLng)
-                        .snippet(markerSnippet));
-
-                // Position the map's camera at the location of the marker.
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
-                        DEFAULT_ZOOM));
-            }
-        };
-
-        // Display the dialog.
-        Logger.debug("Showing Alerts dialog");
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.pick_place)
-                .setItems(likelyPlaceNames, listener)
-                .show();
-    }*/
-
     public void SetMarker(View view){
         MarkerEnabled = true;
     }
@@ -521,123 +549,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return url;
     }
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-            String data = "";
-
-            try {
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Logger.debug("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            ParserTask parserTask = new ParserTask();
-            parserTask.execute(result);
-        }
-    }
-
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                Logger.debug(e.getMessage());
-            }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList points = null;
-            PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList();
-                lineOptions = new PolylineOptions();
-
-                List<HashMap<String, String>> path = result.get(i);
-
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                lineOptions.addAll(points);
-                lineOptions.width(12);
-                lineOptions.color(Color.RED);
-                lineOptions.geodesic(true);
-
-            }
-
-// Drawing polyline in the Google Map for the i-th route
-            try{
-                mMap.addPolyline(lineOptions);
-            }
-            catch(Exception e){
-                Logger.debug(e.getMessage());
-            }
-        }
-    }
 
     /**
      * A method to download json data from url
      */
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            urlConnection.connect();
-
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e) {
-            Logger.error("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
 
 }

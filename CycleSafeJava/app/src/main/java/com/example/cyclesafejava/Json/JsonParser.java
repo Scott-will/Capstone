@@ -11,6 +11,9 @@ public class JsonParser {
             JSONObject jsonObject = new JSONObject(jsonString);
             Settings settings = new Settings();
             settings.DeviceID = jsonObject.getString("DeviceID");
+            settings.Brake = jsonObject.getBoolean("Brake");
+            settings.BatteryNotif = jsonObject.getBoolean("BatteryNotif");
+            settings.Turn = jsonObject.getBoolean("Turn");
             return settings;
         }
         catch(Exception e){
